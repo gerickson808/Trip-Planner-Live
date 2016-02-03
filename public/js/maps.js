@@ -106,6 +106,24 @@ function initialize_gmaps() {
     console.log("Days[day] is now", days[day])
   }
 
+  //remove days
+
+$("#day-title").on("click", ".remove", function(){
+  var $daytoRemove = $('.current-day');
+  var dayNum = day;
+  if(day!=0) $daytoRemove.prev().click();
+  else if(days.length === 1) return;
+  else {
+    $daytoRemove.next().click();
+    $('.day-btn').removeClass('current-day');
+    $daytoRemove.addClass('current-day');
+    day = 0;
+  }
+  $('.add-day').prev().remove();
+  console.log($daytoRemove.prev());
+  days.splice(dayNum,1);
+})
+
 
   //add days buttons
   $(".add-day").on("click", function(){
@@ -134,11 +152,6 @@ function initialize_gmaps() {
     });
   }
 
-  //set current day
-
-
-
-
   //loop through events in current day and add markers
   function addEventsforDay(){
     for(var name in days[day]){
@@ -146,62 +159,9 @@ function initialize_gmaps() {
       addItems(name, days[day][name].type);
     }
   }
-
-  // var hotelLocation = [40.705137, -74.007624];
-  // var restaurantLocations = [
-  //       [40.705137, -74.013940],
-  //       [40.708475, -74.010846]
-  //     ];
-  // var activityLocations = [
-  //       [40.716291, -73.995315],
-  //       [40.707119, -74.003602]
-  //     ];
-
-  // drawLocation(hotelLocation, {
-  //   icon: '/images/lodging_0star.png'
-  // });
-  // restaurantLocations.forEach(function(loc) {
-  //   drawLocation(loc, {
-  //     icon: '/images/restaurant.png'
-  //   });
-  // });
-  // activityLocations.forEach(function(loc) {
-  //   drawLocation(loc, {
-  //     icon: '/images/star-3.png'
-  //   });
-  // });
 }
 
 $(document).ready(function() {
   initialize_gmaps();
 
 });
-
-// var styleArr = [{
-//   featureType: 'landscape',
-//   stylers: [{ saturation: -100 }, { lightness: 60 }]
-// }, {
-//   featureType: 'road.local',
-//   stylers: [{ saturation: -100 }, { lightness: 40 }, { visibility: 'on' }]
-// }, {
-//   featureType: 'transit',
-//   stylers: [{ saturation: -100 }, { visibility: 'simplified' }]
-// }, {
-//   featureType: 'administrative.province',
-//   stylers: [{ visibility: 'off' }]
-// }, {
-//   featureType: 'water',
-//   stylers: [{ visibility: 'on' }, { lightness: 30 }]
-// }, {
-//   featureType: 'road.highway',
-//   elementType: 'geometry.fill',
-//   stylers: [{ color: '#ef8c25' }, { lightness: 40 }]
-// }, {
-//   featureType: 'road.highway',
-//   elementType: 'geometry.stroke',
-//   stylers: [{ visibility: 'off' }]
-// }, {
-//   featureType: 'poi.park',
-//   elementType: 'geometry.fill',
-//   stylers: [{ color: '#b6c54c' }, { lightness: 40 }, { saturation: -40 }]
-// }];
