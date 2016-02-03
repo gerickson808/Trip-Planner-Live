@@ -1,5 +1,8 @@
 function initialize_gmaps() {
-
+  var $listPanel = $('.lists');
+  var days = [];
+  var day = 0;
+  days[day] = {};
   // initialize new google maps LatLng object
   var myLatlng = new google.maps.LatLng(40.705189, -74.009209);
 
@@ -23,16 +26,19 @@ function initialize_gmaps() {
     title: 'Hello World!'
   });
   //Add items on click
-  $('.lists button').on('click', function(){
+  $listPanel.on('click','button', function(){
     var $option = $(this).siblings('select').find('option:selected');
     var type = $option[0].className;
     var name = $option[0].innerText;
+    if(days[day][name])return;
     //add to list
-    listItem = formatSelection(name,type);
+    var listItem = formatSelection(name,type);
     $('.'+type+'-list').append(listItem);
     //add to map
-    getObject(name,type);
-    // location = 
+    var thing = getObject(name,type);
+    var location = thing.place[0].location;
+    var marker = markerType(type);
+    drawLocation(location,marker, name);
   });
 
   //Format selected option for adding
@@ -48,19 +54,40 @@ function initialize_gmaps() {
     return object[0];
   }
 
+  //Pick an icon, any icon
+  function markerType(type){
+    var source;
+    switch (type){
+      case "hotels":
+        source = '/images/lodging_0star.png';
+        break;
+      case "restaurants":
+        source = '/images/restaurant.png';
+        break;
+      default:
+        source = '/images/star-3.png';
+    }
+    return {icon: source};
+  }
   //Remove list items!!
   $('.panel-body').on('click','.remove', function(){
-    $(this).parent().remove();
+    var $entry = $(this).parent();
+    var $name = $entry.find('span').text();
+    days[day][$name].setMap(null);
+    days[day][$name] = null;
+    $entry.remove();
   });
 
   // draw some locations on the map
-  function drawLocation(location, opts) {
+  function drawLocation(location, opts, name) {
     if (typeof opts !== 'object') {
       opts = {};
     }
     opts.position = new google.maps.LatLng(location[0], location[1]);
     opts.map = map;
     var marker = new google.maps.Marker(opts);
+    days[day][name] = marker;
+
   }
 
   // var hotelLocation = [40.705137, -74.007624];
