@@ -22,6 +22,36 @@ function initialize_gmaps() {
     position: myLatlng,
     title: 'Hello World!'
   });
+  //Add items on click
+  $('.lists button').on('click', function(){
+    var $option = $(this).siblings('select').find('option:selected');
+    var type = $option[0].className;
+    var name = $option[0].innerText;
+    //add to list
+    listItem = formatSelection(name,type);
+    $('.'+type+'-list').append(listItem);
+    //add to map
+    getObject(name,type);
+    // location = 
+  });
+
+  //Format selected option for adding
+  function formatSelection(name, type){
+    return "<div class='itinerary-item'><span class='title'>"+name+"</span><button class='btn btn-xs btn-danger remove btn-circle'>x</button></div>";
+  }
+
+  //Find thing object from dumb array
+  function getObject(name,type){
+    object = window[type].filter(function(obj){
+      return obj.name === name;
+    });
+    return object[0];
+  }
+
+  //Remove list items!!
+  $('.panel-body').on('click','.remove', function(){
+    $(this).parent().remove();
+  });
 
   // draw some locations on the map
   function drawLocation(location, opts) {
@@ -33,33 +63,34 @@ function initialize_gmaps() {
     var marker = new google.maps.Marker(opts);
   }
 
-  var hotelLocation = [40.705137, -74.007624];
-  var restaurantLocations = [
-        [40.705137, -74.013940],
-        [40.708475, -74.010846]
-      ];
-  var activityLocations = [
-        [40.716291, -73.995315],
-        [40.707119, -74.003602]
-      ];
+  // var hotelLocation = [40.705137, -74.007624];
+  // var restaurantLocations = [
+  //       [40.705137, -74.013940],
+  //       [40.708475, -74.010846]
+  //     ];
+  // var activityLocations = [
+  //       [40.716291, -73.995315],
+  //       [40.707119, -74.003602]
+  //     ];
 
-  drawLocation(hotelLocation, {
-    icon: '/images/lodging_0star.png'
-  });
-  restaurantLocations.forEach(function(loc) {
-    drawLocation(loc, {
-      icon: '/images/restaurant.png'
-    });
-  });
-  activityLocations.forEach(function(loc) {
-    drawLocation(loc, {
-      icon: '/images/star-3.png'
-    });
-  });
+  // drawLocation(hotelLocation, {
+  //   icon: '/images/lodging_0star.png'
+  // });
+  // restaurantLocations.forEach(function(loc) {
+  //   drawLocation(loc, {
+  //     icon: '/images/restaurant.png'
+  //   });
+  // });
+  // activityLocations.forEach(function(loc) {
+  //   drawLocation(loc, {
+  //     icon: '/images/star-3.png'
+  //   });
+  // });
 }
 
 $(document).ready(function() {
   initialize_gmaps();
+
 });
 
 // var styleArr = [{
