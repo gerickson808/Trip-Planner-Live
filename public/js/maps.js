@@ -5,6 +5,8 @@ function initialize_gmaps() {
   days[day] = {};
   // initialize new google maps LatLng object
   var myLatlng = new google.maps.LatLng(40.705189, -74.009209);
+    //map bounds
+  var bounds = new google.maps.LatLngBounds();
 
   // set the map options hash
   var mapOptions = {
@@ -43,6 +45,7 @@ function initialize_gmaps() {
     var location = thing.place[0].location;
     var marker = markerType(type);
     drawLocation(location, marker, name, type);
+    markerBounds();
   }
 
   //Format selected option for adding
@@ -100,12 +103,26 @@ function initialize_gmaps() {
     }
     opts.position = new google.maps.LatLng(location[0], location[1]);
     opts.map = map;
+    opts.title = makeTitle(name, type);
     var marker = new google.maps.Marker(opts);
     days[day][name] = {marker: marker, type: type}
     console.log("Days[day]["+name+"] JUST ASSIGNED AS",days[day][name]);
     console.log("Days[day] is now", days[day])
   }
 
+  function makeTitle(name, type){
+    var newTitle;
+    if(type === "hotels"){
+      newTitle = "Hotel: " + name;
+    }
+    if(type === "activities"){
+      newTitle = "Activity: " + name;
+    }
+    if(type ===  "restaurants"){
+      newTitle = "Restaurant: " + name;
+    }
+    return newTitle;
+  }
   //remove days
 
 $("#day-title").on("click", ".remove", function(){
@@ -134,6 +151,7 @@ $("#day-title").on("click", ".remove", function(){
   //switch days
   $(".day-buttons").on("click", ".day-btn", function(){
       deleteList();
+      map = new google.maps.Map(map_canvas_obj, mapOptions);
       $(".current-day").removeClass("current-day");
       $(this).addClass("current-day");
       day = Number($(this).text())-1;
@@ -159,9 +177,20 @@ $("#day-title").on("click", ".remove", function(){
       addItems(name, days[day][name].type);
     }
   }
+
+
+  function markerBounds(){
+      for(var mark in days[day]){
+        bounds.extend(days[day][mark].marker.position);
+      };
+      map.fitBounds(bounds);
+    }
 }
 
 $(document).ready(function() {
   initialize_gmaps();
 
 });
+
+
+
