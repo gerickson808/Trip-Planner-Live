@@ -30,7 +30,11 @@ function initialize_gmaps() {
     var $option = $(this).siblings('select').find('option:selected');
     var type = $option[0].className;
     var name = $option[0].innerText;
-    if(days[day][name])return;
+    if(!days[day][name]) addItems(name, type);
+  });
+
+  //
+  function addItems(name, type) {
     //add to list
     var listItem = formatSelection(name,type);
     $('.'+type+'-list').append(listItem);
@@ -38,8 +42,8 @@ function initialize_gmaps() {
     var thing = getObject(name,type);
     var location = thing.place[0].location;
     var marker = markerType(type);
-    drawLocation(location,marker, name);
-  });
+    drawLocation(location, marker, name, type);
+  }
 
   //Format selected option for adding
   function formatSelection(name, type){
@@ -72,22 +76,75 @@ function initialize_gmaps() {
   //Remove list items!!
   $('.panel-body').on('click','.remove', function(){
     var $entry = $(this).parent();
-    var $name = $entry.find('span').text();
-    days[day][$name].setMap(null);
-    days[day][$name] = null;
-    $entry.remove();
+    removeitems($entry);
   });
 
+  //remove items
+  function removeitems(entry){
+    var name = deleteListEntryAndMarker(entry);
+    days[day][name] = null;
+  }
+
+  function deleteListEntryAndMarker(entry){
+    var $name = $(entry).find('span').text();
+    days[day][$name].marker.setMap(null);
+    console.log("entry", entry);
+    entry.remove();
+    return $name;
+  }
+
   // draw some locations on the map
-  function drawLocation(location, opts, name) {
+  function drawLocation(location, opts, name, type) {
     if (typeof opts !== 'object') {
       opts = {};
     }
     opts.position = new google.maps.LatLng(location[0], location[1]);
     opts.map = map;
     var marker = new google.maps.Marker(opts);
-    days[day][name] = marker;
+    days[day][name] = {marker: marker, type: type}
+    console.log("Days[day]["+name+"] JUST ASSIGNED AS",days[day][name]);
+    console.log("Days[day] is now", days[day])
+  }
 
+
+  //add days buttons
+  $(".add-day").on("click", function(){
+    var num = $(".day-buttons").children().length;
+    $(this).before('<button class="btn btn-circle day-btn">' + num +'</button>');
+  });
+
+  //switch days
+  $(".day-buttons").on("click", ".day-btn", function(){
+      deleteList();
+      $(".current-day").removeClass("current-day");
+      $(this).addClass("current-day");
+      day = Number($(this).text())-1;
+      console.log("switch", days[day]);
+      if(!days[day]) days[day] = {};
+      console.log(day);
+      addEventsforDay();
+  });
+
+  //delete list entry and marker
+  function deleteList(){
+    var $listItems = $('.list-group').children()
+    $listItems.each(function(index, listItem){
+    console.log(listItem);
+        deleteListEntryAndMarker(listItem);
+    });
+  }
+
+  //set current day
+
+
+
+
+  //loop through events in current day and add markers
+  function addEventsforDay(){
+    for(var name in days[day]){
+      console.log("add", name, days[day]);
+      addItems(name, days[day][name].type);
+    }
   }
 
   // var hotelLocation = [40.705137, -74.007624];
