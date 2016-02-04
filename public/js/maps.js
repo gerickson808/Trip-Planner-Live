@@ -1,5 +1,6 @@
 function initialize_gmaps() {
   var $listPanel = $('.lists');
+  var $dayTitle = $('#day-title');
   var days = [];
   var day = 0;
   days[day] = {};
@@ -29,6 +30,7 @@ function initialize_gmaps() {
   });
   //Add items on click
   $listPanel.on('click','button', function(){
+    this.blur();
     var $option = $(this).siblings('select').find('option:selected');
     var type = $option[0].className;
     var name = $option[0].innerText;
@@ -125,7 +127,7 @@ function initialize_gmaps() {
   }
   //remove days
 
-$("#day-title").on("click", ".remove", function(){
+$dayTitle.on("click", ".remove", function(){
   var $daytoRemove = $('.current-day');
   var dayNum = day;
   if(day!=0) $daytoRemove.prev().click();
@@ -139,17 +141,19 @@ $("#day-title").on("click", ".remove", function(){
   $('.add-day').prev().remove();
   console.log($daytoRemove.prev());
   days.splice(dayNum,1);
-})
+});
 
 
   //add days buttons
   $(".add-day").on("click", function(){
+    this.blur();
     var num = $(".day-buttons").children().length;
     $(this).before('<button class="btn btn-circle day-btn">' + num +'</button>');
   });
 
   //switch days
   $(".day-buttons").on("click", ".day-btn", function(){
+      this.blur();
       deleteList();
       map = new google.maps.Map(map_canvas_obj, mapOptions);
       $(".current-day").removeClass("current-day");
@@ -158,12 +162,13 @@ $("#day-title").on("click", ".remove", function(){
       console.log("switch", days[day]);
       if(!days[day]) days[day] = {};
       console.log(day);
+      $dayTitle.find('span').text("Day "+(day+1));
       addEventsforDay();
   });
 
   //delete list entry and marker
   function deleteList(){
-    var $listItems = $('.list-group').children()
+    var $listItems = $('.list-group').children();
     $listItems.each(function(index, listItem){
     console.log(listItem);
         deleteListEntryAndMarker(listItem);
